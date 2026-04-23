@@ -1,75 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Render Table</title>
-    <style>
-        body {
-            font-family: Arial;
-        }
+<meta charset="UTF-8">
+<title>Render Multi View</title>
 
-        table {
-            border-collapse: collapse;
-            width: 300px;
-        }
+<style>
+    body {
+        font-family: Arial;
+        margin: 20px;
+    }
 
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-        }
-    </style>
+    h2 {
+        margin-top: 40px;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 300px;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+    }
+
+    .card-container {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .card {
+        border: 1px solid black;
+        padding: 10px;
+        width: 100px;
+    }
+
+    ul {
+        padding-left: 20px;
+    }
+
+    .menu {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .menu button {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
 </head>
+
 <body>
 
-<h2>Data Tabel</h2>
+<h1>Render Data (DRY, Modular, Scalable)</h1>
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nama</th>
-        </tr>
-    </thead>
-    <tbody id="table-body"></tbody>
-</table>
+<!-- MENU -->
+<div class="menu">
+    <button onclick="UI.show('table')">Table</button>
+    <button onclick="UI.show('card')">Card</button>
+    <button onclick="UI.show('list')">List</button>
+</div>
+
+<!-- TABLE -->
+<div id="table-view">
+    <h2>Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nama</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+</div>
+
+<!-- CARD -->
+<div id="card-view" class="hidden">
+    <h2>Card</h2>
+    <div id="card-container" class="card-container"></div>
+</div>
+
+<!-- LIST -->
+<div id="list-view" class="hidden">
+    <h2>List</h2>
+    <ul id="list-container"></ul>
+</div>
 
 <script>
-    // ======================
-    // DATA (Reusable)
-    // ======================
-    const data = [
-        { id: 1, nama: "satu" },
-        { id: 2, nama: "dua" },
-        { id: 3, nama: "tiga" }
-    ];
+/* =========================
+   DATA (Reusable)
+========================= */
+const data = [
+    { id: 1, nama: "satu" },
+    { id: 2, nama: "dua" },
+    { id: 3, nama: "tiga" },
+    { id: 4, nama: "empat" },
+    { id: 5, nama: "lima" },
+    { id: 6, nama: "enam" }
+];
 
-    // ======================
-    // MODULE: TableRenderer
-    // ======================
-    const TableRenderer = {
-        render: function(data, targetId) {
-            const tbody = document.getElementById(targetId);
-            tbody.innerHTML = "";
+/* =========================
+   MODULE: Renderer (DRY)
+========================= */
+const Renderer = {
 
-            data.forEach(item => {
-                tbody.innerHTML += this.createRow(item);
-            });
-        },
-
-        createRow: function(item) {
-            return `
+    renderTable(data, targetId) {
+        const el = document.getElementById(targetId);
+        el.innerHTML = "";
+        data.forEach(item => {
+            el.innerHTML += `
                 <tr>
                     <td>${item.id}</td>
                     <td>${item.nama}</td>
                 </tr>
             `;
-        }
-    };
+        });
+    },
 
-    // ======================
-    // INIT (Scalable)
-    // ======================
-    TableRenderer.render(data, "table-body");
+    renderCard(data, targetId) {
+        const el = document.getElementById(targetId);
+        el.innerHTML = "";
+        data.forEach(item => {
+            el.innerHTML += `
+                <div class="card">
+                    <h4>${item.nama}</h4>
+                    <p>ID: ${item.id}</p>
+                </div>
+            `;
+        });
+    },
+
+    renderList(data, targetId) {
+        const el = document.getElementById(targetId);
+        el.innerHTML = "";
+        data.forEach(item => {
+            el.innerHTML += `<li>${item.id} - ${item.nama}</li>`;
+        });
+    }
+};
+
+/* =========================
+   MODULE: UI (Reusable)
+========================= */
+const UI = {
+    show(view) {
+        document.getElementById("table-view").classList.add("hidden");
+        document.getElementById("card-view").classList.add("hidden");
+        document.getElementById("list-view").classList.add("hidden");
+
+        document.getElementById(view + "-view").classList.remove("hidden");
+    }
+};
+
+/* =========================
+   INIT (Scalable)
+========================= */
+Renderer.renderTable(data, "table-body");
+Renderer.renderCard(data, "card-container");
+Renderer.renderList(data, "list-container");
+
 </script>
 
 </body>
