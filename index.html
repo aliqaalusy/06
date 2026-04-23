@@ -5,13 +5,21 @@
 <title>Render Multi View</title>
 
 <style>
-    body {
-        font-family: Arial;
-        margin: 20px;
+    body { font-family: Arial; margin: 20px; }
+
+    .menu {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
     }
 
-    h2 {
-        margin-top: 40px;
+    .menu button {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .active {
+        background-color: lightblue;
     }
 
     table {
@@ -36,40 +44,37 @@
         width: 100px;
     }
 
-    ul {
-        padding-left: 20px;
-    }
-
-    .menu {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .menu button {
-        padding: 8px 12px;
-        cursor: pointer;
-    }
-
     .hidden {
         display: none;
+    }
+
+    pre {
+        background: #f4f4f4;
+        padding: 10px;
     }
 </style>
 </head>
 
 <body>
 
-<h1>Render Data (DRY, Modular, Scalable)</h1>
+<h1>Render Data (Array, Table, Card, List, Menu)</h1>
 
 <!-- MENU -->
 <div class="menu">
-    <button onclick="UI.show('table')">Table</button>
-    <button onclick="UI.show('card')">Card</button>
-    <button onclick="UI.show('list')">List</button>
+    <button onclick="UI.show('array', this)">Array</button>
+    <button onclick="UI.show('table', this)">Table</button>
+    <button onclick="UI.show('card', this)">Card</button>
+    <button onclick="UI.show('list', this)">List</button>
+</div>
+
+<!-- ARRAY VIEW -->
+<div id="array-view">
+    <h2>Array (Raw Data)</h2>
+    <pre id="array-container"></pre>
 </div>
 
 <!-- TABLE -->
-<div id="table-view">
+<div id="table-view" class="hidden">
     <h2>Table</h2>
     <table>
         <thead>
@@ -112,6 +117,11 @@ const data = [
 ========================= */
 const Renderer = {
 
+    renderArray(data, targetId) {
+        const el = document.getElementById(targetId);
+        el.textContent = JSON.stringify(data, null, 2);
+    },
+
     renderTable(data, targetId) {
         const el = document.getElementById(targetId);
         el.innerHTML = "";
@@ -151,21 +161,32 @@ const Renderer = {
    MODULE: UI (Reusable)
 ========================= */
 const UI = {
-    show(view) {
-        document.getElementById("table-view").classList.add("hidden");
-        document.getElementById("card-view").classList.add("hidden");
-        document.getElementById("list-view").classList.add("hidden");
+    show(view, btn) {
 
+        // hide semua view
+        ["array","table","card","list"].forEach(v => {
+            document.getElementById(v + "-view").classList.add("hidden");
+        });
+
+        // tampilkan view dipilih
         document.getElementById(view + "-view").classList.remove("hidden");
+
+        // update active menu
+        document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
     }
 };
 
 /* =========================
    INIT (Scalable)
 ========================= */
+Renderer.renderArray(data, "array-container");
 Renderer.renderTable(data, "table-body");
 Renderer.renderCard(data, "card-container");
 Renderer.renderList(data, "list-container");
+
+// default aktif
+document.querySelector(".menu button").click();
 
 </script>
 
