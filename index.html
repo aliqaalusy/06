@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Render Table</title>
+    <style>
+        body {
+            font-family: Arial;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 300px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Data Tabel</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nama</th>
+        </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+</table>
+
+<script>
+    // ======================
+    // DATA (Reusable)
+    // ======================
+    const data = [
+        { id: 1, nama: "satu" },
+        { id: 2, nama: "dua" },
+        { id: 3, nama: "tiga" }
+    ];
+
+    // ======================
+    // MODULE: TableRenderer
+    // ======================
+    const TableRenderer = {
+        render: function(data, targetId) {
+            const tbody = document.getElementById(targetId);
+            tbody.innerHTML = "";
+
+            data.forEach(item => {
+                tbody.innerHTML += this.createRow(item);
+            });
+        },
+
+        createRow: function(item) {
+            return `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.nama}</td>
+                </tr>
+            `;
+        }
+    };
+
+    // ======================
+    // INIT (Scalable)
+    // ======================
+    TableRenderer.render(data, "table-body");
+</script>
+
+</body>
+</html>
