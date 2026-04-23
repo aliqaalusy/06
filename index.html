@@ -5,104 +5,149 @@
 <title>Render Multi View</title>
 
 <style>
-    body { font-family: Arial; margin: 20px; }
+body {
+    font-family: Arial;
+    background: #f5f7fb;
+    padding: 20px;
+}
 
-    .menu {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
+/* TAB */
+.tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
+}
 
-    .menu button {
-        padding: 8px 12px;
-        cursor: pointer;
-    }
+.tab-btn {
+    padding: 10px 15px;
+    border: none;
+    background: #ddd;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+}
 
-    .active {
-        background-color: lightblue;
-    }
+.tab-btn.active {
+    background: #4facfe;
+    color: white;
+}
 
-    table {
-        border-collapse: collapse;
-        width: 300px;
-    }
+/* CONTENT */
+.content {
+    background: white;
+    padding: 20px;
+    border-radius: 0 10px 10px 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
-    th, td {
-        border: 1px solid black;
-        padding: 8px;
-    }
+.hidden { display: none; }
 
-    .card-container {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
+/* MENU LIST */
+.menu-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 
-    .card {
-        border: 1px solid black;
-        padding: 10px;
-        width: 100px;
-    }
+.menu-item {
+    background: #4facfe;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
 
-    .hidden {
-        display: none;
-    }
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-    pre {
-        background: #f4f4f4;
-        padding: 10px;
-    }
+th {
+    background: #4facfe;
+    color: white;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* CARD */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.card {
+    background: #fafafa;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* ARRAY */
+pre {
+    background: black;
+    color: lime;
+    padding: 10px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>Render Data (Array, Table, Card, List, Menu)</h1>
+<h1>Render Data Lengkap</h1>
 
-<!-- MENU -->
-<div class="menu">
-    <button onclick="UI.show('array', this)">Array</button>
-    <button onclick="UI.show('table', this)">Table</button>
-    <button onclick="UI.show('card', this)">Card</button>
-    <button onclick="UI.show('list', this)">List</button>
+<!-- TAB MENU -->
+<div class="tabs">
+    <button class="tab-btn" onclick="UI.show('array', this)">Array</button>
+    <button class="tab-btn" onclick="UI.show('menu', this)">Menu</button>
+    <button class="tab-btn" onclick="UI.show('table', this)">Table</button>
+    <button class="tab-btn" onclick="UI.show('card', this)">Card</button>
+    <button class="tab-btn" onclick="UI.show('list', this)">List</button>
 </div>
 
-<!-- ARRAY VIEW -->
+<div class="content">
+
+<!-- ARRAY -->
 <div id="array-view">
-    <h2>Array (Raw Data)</h2>
-    <pre id="array-container"></pre>
+    <h3>Array</h3>
+    <pre id="array"></pre>
+</div>
+
+<!-- MENU -->
+<div id="menu-view" class="hidden">
+    <h3>Menu</h3>
+    <div id="menu" class="menu-list"></div>
 </div>
 
 <!-- TABLE -->
 <div id="table-view" class="hidden">
-    <h2>Table</h2>
+    <h3>Table</h3>
     <table>
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nama</th>
-            </tr>
+            <tr><th>ID</th><th>Nama</th></tr>
         </thead>
-        <tbody id="table-body"></tbody>
+        <tbody id="table"></tbody>
     </table>
 </div>
 
 <!-- CARD -->
 <div id="card-view" class="hidden">
-    <h2>Card</h2>
-    <div id="card-container" class="card-container"></div>
+    <h3>Card</h3>
+    <div id="card" class="card-container"></div>
 </div>
 
 <!-- LIST -->
 <div id="list-view" class="hidden">
-    <h2>List</h2>
-    <ul id="list-container"></ul>
+    <h3>List</h3>
+    <ul id="list"></ul>
+</div>
+
 </div>
 
 <script>
-/* =========================
-   DATA (Reusable)
-========================= */
+/* DATA */
 const data = [
     { id: 1, nama: "satu" },
     { id: 2, nama: "dua" },
@@ -112,82 +157,76 @@ const data = [
     { id: 6, nama: "enam" }
 ];
 
-/* =========================
-   MODULE: Renderer (DRY)
-========================= */
+/* RENDERER */
 const Renderer = {
 
-    renderArray(data, targetId) {
-        const el = document.getElementById(targetId);
-        el.textContent = JSON.stringify(data, null, 2);
+    array(data) {
+        document.getElementById("array").textContent =
+            JSON.stringify(data, null, 2);
     },
 
-    renderTable(data, targetId) {
-        const el = document.getElementById(targetId);
+    menu(data) {
+        const el = document.getElementById("menu");
         el.innerHTML = "";
-        data.forEach(item => {
-            el.innerHTML += `
-                <tr>
-                    <td>${item.id}</td>
-                    <td>${item.nama}</td>
-                </tr>
-            `;
+        data.forEach(i => {
+            el.innerHTML += `<div class="menu-item">${i.nama}</div>`;
         });
     },
 
-    renderCard(data, targetId) {
-        const el = document.getElementById(targetId);
+    table(data) {
+        const el = document.getElementById("table");
         el.innerHTML = "";
-        data.forEach(item => {
+        data.forEach(i => {
+            el.innerHTML += `<tr><td>${i.id}</td><td>${i.nama}</td></tr>`;
+        });
+    },
+
+    card(data) {
+        const el = document.getElementById("card");
+        el.innerHTML = "";
+        data.forEach(i => {
             el.innerHTML += `
                 <div class="card">
-                    <h4>${item.nama}</h4>
-                    <p>ID: ${item.id}</p>
-                </div>
-            `;
+                    <b>${i.nama}</b><br>
+                    ID: ${i.id}
+                </div>`;
         });
     },
 
-    renderList(data, targetId) {
-        const el = document.getElementById(targetId);
+    list(data) {
+        const el = document.getElementById("list");
         el.innerHTML = "";
-        data.forEach(item => {
-            el.innerHTML += `<li>${item.id} - ${item.nama}</li>`;
+        data.forEach(i => {
+            el.innerHTML += `<li>${i.id} - ${i.nama}</li>`;
         });
     }
 };
 
-/* =========================
-   MODULE: UI (Reusable)
-========================= */
+/* UI */
 const UI = {
     show(view, btn) {
 
-        // hide semua view
-        ["array","table","card","list"].forEach(v => {
-            document.getElementById(v + "-view").classList.add("hidden");
+        ["array","menu","table","card","list"].forEach(v => {
+            document.getElementById(v+"-view").classList.add("hidden");
         });
 
-        // tampilkan view dipilih
-        document.getElementById(view + "-view").classList.remove("hidden");
+        document.getElementById(view+"-view").classList.remove("hidden");
 
-        // update active menu
-        document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-btn")
+            .forEach(b => b.classList.remove("active"));
+
         btn.classList.add("active");
     }
 };
 
-/* =========================
-   INIT (Scalable)
-========================= */
-Renderer.renderArray(data, "array-container");
-Renderer.renderTable(data, "table-body");
-Renderer.renderCard(data, "card-container");
-Renderer.renderList(data, "list-container");
+/* INIT */
+Renderer.array(data);
+Renderer.menu(data);
+Renderer.table(data);
+Renderer.card(data);
+Renderer.list(data);
 
-// default aktif
-document.querySelector(".menu button").click();
-
+document.querySelector(".tab-btn").click();
 </script>
 
 </body>
